@@ -6,6 +6,7 @@
     "@babel/helper-builder-react-jsx": "^7.15.4",
     "@binance-chain/javascript-sdk": "^4.2.0",
     "@craco/craco": "^6.4.5",
+    "@ledgerhq/hw-transport-webhid": "^6.27.2",
     "@walletconnect/client": "^1.6.5",
     "@walletconnect/qrcode-modal": "^1.6.5",
     "antd": "^3.19.5",

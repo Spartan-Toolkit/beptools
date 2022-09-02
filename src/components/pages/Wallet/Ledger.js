@@ -1,14 +1,14 @@
 import React, { useState, useContext } from "react";
 import { Icon as AntIcon, Row, Col, message } from "antd";
 import { ledger, crypto } from "@binance-chain/javascript-sdk";
-import u2f_transport from "@ledgerhq/hw-transport-u2f";
+import TransportWebHID from "@ledgerhq/hw-transport-webhid";
 
 import Binance from "../../../clients/binance";
 import { Context } from "../../../context";
 import { Icon, Button, Text } from "../../Components";
 import { InputNumber } from "antd";
 
-ledger.transports.u2f = u2f_transport;
+ledger.transports.u2f = TransportWebHID;
 window.ledger = ledger;
 
 const Connector = (props) => {
@@ -18,34 +18,35 @@ const Connector = (props) => {
 
   const ledgerConnect = async () => {
     setConnecting(true);
-    message.success(
-      <Text color='#50E3C2'>Please approve on your ledger</Text>,
-      5
-    );
-
-    // use the u2f transport
-    const timeout = 5000;
-    const transport = await ledger.transports.u2f.create(timeout);
-    const app = new ledger.app(transport);
-
-    // get version
     try {
-      const version = await app.getVersion();
-      console.log("version", version);
-    } catch ({ message, statusCode }) {
-      console.error("version error", message, statusCode);
-    }
+      message.success(
+        <Text color='#50E3C2'>Please approve on your ledger</Text>,
+        5
+      );
 
-    // we can provide the hd path (app checks first two parts are same as below)
-    const hdPath = [44, 714, 0, 0, ledgerIndex];
+      // use the u2f transport
+      const timeout = 5000;
+      const transport = await ledger.transports.u2f.create(timeout);
+      const app = new ledger.app(transport);
 
-    // select which address to use
-    const results = await app.showAddress(Binance.getPrefix(), hdPath);
-    console.log("Results:", results);
+      // get version
+      try {
+        const version = await app.getVersion();
+        console.log("version", version);
+      } catch ({ message, statusCode }) {
+        console.error("version error", message, statusCode);
+      }
 
-    // get public key
-    let pk;
-    try {
+      // we can provide the hd path (app checks first two parts are same as below)
+      const hdPath = [44, 714, 0, 0, ledgerIndex];
+
+      // select which address to use
+      const results = await app.showAddress(Binance.getPrefix(), hdPath);
+      console.log("Results:", results);
+
+      // get public key
+      let pk;
+
       pk = (await app.getPublicKey(hdPath)).pk;
 
       // get address from pubkey
